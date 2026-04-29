@@ -1,0 +1,377 @@
+/* ============================================
+   VENDREMAMACHINE.FR — APPLICATION JS
+   ============================================ */
+'use strict';
+
+/* ─── SVG ICONS (inline helpers) ─── */
+const ICONS = {
+  gear: `<svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.34.07-.69.07-1.08s-.03-.74-.07-1.08l2.36-1.84c.21-.16.27-.45.14-.68l-2.24-3.87c-.14-.23-.42-.3-.65-.23l-2.79 1.12c-.58-.45-1.21-.82-1.9-1.1L14 2.42C13.96 2.18 13.74 2 13.5 2h-3c-.24 0-.45.18-.49.42l-.42 2.9c-.69.28-1.32.65-1.9 1.1L4.9 5.3c-.24-.08-.51 0-.65.23L2.01 9.4c-.14.23-.07.52.14.68l2.36 1.84c-.04.34-.07.68-.07 1.08s.03.74.07 1.08L2.15 15.92c-.21.16-.28.45-.14.68l2.24 3.87c.13.23.41.3.65.23l2.79-1.12c.58.45 1.21.82 1.9 1.1l.42 2.9c.04.24.25.42.49.42h3c.24 0 .45-.18.49-.42l.42-2.9c.69-.28 1.32-.65 1.9-1.1l2.79 1.12c.24.08.51 0 .65-.23l2.24-3.87c.14-.23.07-.52-.14-.68l-2.36-1.84z"/></svg>`,
+  bolt: `<svg viewBox="0 0 24 24"><path d="M11 21H5L9 10H3L13 3H19L15 14H21L11 21Z"/></svg>`,
+  zap: `<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`,
+  truck: `<svg viewBox="0 0 24 24"><path d="M1 3h15v13H1V3zm15 4h4l3 3v6h-7V7zM5.5 17a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm13 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>`,
+  snowflake: `<svg viewBox="0 0 24 24"><path d="M20 11h-3.17l2.54-2.54-1.42-1.42L14 11h-2V9l3.95-3.95-1.41-1.41L13 5.17V2h-2v3.17l-1.54-1.53-1.41 1.41L12 9v2h-2L6.05 7.05 4.64 8.46 7.17 11H4v2h3.17l-2.54 2.54 1.42 1.42L10 13h2v2l-3.95 3.95 1.41 1.41 1.54-1.53V22h2v-3.17l1.54 1.53 1.41-1.41L13 15v-2h2l3.95 3.95 1.41-1.41L17.83 13H21v-2z"/></svg>`,
+  factory: `<svg viewBox="0 0 24 24"><path d="M4 18V7.5L9 10V7.5l5 2.5V7l6-3v14H4zm8-7h2v2h-2v-2zm-4 0h2v2H8v-2zm8 0h2v2h-2v-2zM8 14h2v2H8v-2zm4 0h2v2h-2v-2zm4 0h2v2h-2v-2z"/></svg>`,
+  transformer: `<svg viewBox="0 0 24 24"><path d="M9 3H7v4H3v2h4v10h2V9h4V7H9V3zm10 0h-2v2h-4v2h4v10h2V7h2V5h-2V3z"/></svg>`,
+  search: `<svg viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>`,
+  menu: `<svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>`,
+  close: `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
+  location: `<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>`,
+  user: `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>`,
+  list: `<svg viewBox="0 0 24 24"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>`,
+  add: `<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>`,
+  edit: `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`,
+  check: `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`,
+  mail: `<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+  phone: `<svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg>`,
+  warning: `<svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`,
+  info: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`,
+  star: `<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`,
+  image: `<svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`,
+};
+
+/* ─── SAMPLE DATA ─── */
+const SAMPLE_ANNONCES = [
+  { id: 1, titre: 'Tour à métaux MAZAK QT-350', categorie: 'Machines-outils', marque: 'MAZAK', modele: 'QT-350', annee: 2018, etat: 'Occasion', prix: 48000, localisation: 'Lyon (69)', description: 'Tour CNC en excellent état, révisé complet en 2023. Plateau 350mm, entre-pointes 1000mm, moteur 22kW. Toutes pièces de rechange disponibles.', vendeur: { nom: 'Jean-Marc Durand', tel: '+33 6 12 34 56 78', email: 'jm.durand@gmail.com', pro: true }, statut: 'approved', date: '2024-01-15', vues: 234, image: null },
+  { id: 2, titre: 'Groupe électrogène SDMO 200 kVA', categorie: 'Groupes électrogènes', marque: 'SDMO', modele: 'J200K', annee: 2020, etat: 'Occasion', prix: 22000, localisation: 'Paris (75)', description: 'Groupe électrogène diesel 200kVA, insonorisé, 4800 heures. Toutes révisions à jour, prêt à l\'emploi.', vendeur: { nom: 'STE Énergie Plus', tel: '+33 1 23 45 67 89', email: 'contact@energie-plus.fr', pro: true }, statut: 'approved', date: '2024-01-18', vues: 187, image: null },
+  { id: 3, titre: 'Transformateur HTA/BT 630 kVA', categorie: 'Transformateurs', marque: 'SCHNEIDER', modele: 'Minera 630', annee: 2016, etat: 'Occasion', prix: 8500, localisation: 'Marseille (13)', description: 'Transformateur huile immergée 630 kVA, 20kV/410V, en bon état général. Dernier contrôle 2023.', vendeur: { nom: 'Renaud Électricité', tel: '+33 4 91 23 45 67', email: 'renaud.elec@pro.fr', pro: true }, statut: 'approved', date: '2024-01-20', vues: 142, image: null },
+  { id: 4, titre: 'Groupe froid CARRIER 200 kW', categorie: 'Groupes froid', marque: 'CARRIER', modele: '30XA 200', annee: 2019, etat: 'Occasion', prix: 31500, localisation: 'Bordeaux (33)', description: 'Chiller à vis 200kW, fluide R134a, compresseur révisé. Idéal industrie agroalimentaire.', vendeur: { nom: 'Froid Industrie Sud', tel: '+33 5 56 78 90 12', email: 'contact@froid-sud.fr', pro: true }, statut: 'approved', date: '2024-01-22', vues: 98, image: null },
+  { id: 5, titre: 'Centre d\'usinage HAAS VF-3', categorie: 'Machines-outils', marque: 'HAAS', modele: 'VF-3', annee: 2017, etat: 'Occasion', prix: 62000, localisation: 'Toulouse (31)', description: 'Centre d\'usinage vertical 3 axes, table 1270×508mm, broche 8100tr/min, magasin 24 outils. Très bon état.', vendeur: { nom: 'TM Industrie', tel: '+33 5 61 23 45 67', email: 'tm.industrie@email.fr', pro: false }, statut: 'approved', date: '2024-01-24', vues: 311, image: null },
+  { id: 6, titre: 'Chariot élévateur STILL RX60-25', categorie: 'Matériel industriel', marque: 'STILL', modele: 'RX60-25', annee: 2021, etat: 'Occasion', prix: 19800, localisation: 'Strasbourg (67)', description: 'Chariot élévateur électrique 2,5 tonnes, batterie lithium-ion récente, 3200 heures. Très fiable.', vendeur: { nom: 'Logistique Est SAS', tel: '+33 3 88 12 34 56', email: 'logistique.est@gmail.com', pro: true }, statut: 'approved', date: '2024-01-25', vues: 203, image: null },
+  { id: 7, titre: 'Camion plateau IVECO Daily 35S', categorie: 'Véhicules utilitaires', marque: 'IVECO', modele: 'Daily 35S17', annee: 2022, etat: 'Occasion', prix: 28500, localisation: 'Nantes (44)', description: 'Camion plateau grue 3,5T, 95 000 km, grue HIAB 1 tonne, attaches arrière. CT OK.', vendeur: { nom: 'Transports Moreau', tel: '+33 2 40 12 34 56', email: 'moreau.transport@pro.fr', pro: true }, statut: 'approved', date: '2024-01-26', vues: 156, image: null },
+  { id: 8, titre: 'Fraiseuse BRIDGEPORT Series II', categorie: 'Machines-outils', marque: 'BRIDGEPORT', modele: 'Series II Special', annee: 2005, etat: 'Occasion', prix: 4200, localisation: 'Lille (59)', description: 'Fraiseuse universelle en bon état, DRO 3 axes, tête inclinable. Outil de qualité pour atelier.', vendeur: { nom: 'Pierre Leblanc', tel: '+33 3 20 45 67 89', email: 'p.leblanc@artisan.fr', pro: false }, statut: 'approved', date: '2024-01-27', vues: 88, image: null },
+  { id: 9, titre: 'Générateur Honda EU70is 7 kVA', categorie: 'Groupes électrogènes', marque: 'HONDA', modele: 'EU70is', annee: 2023, etat: 'Neuf', prix: 5200, localisation: 'Nice (06)', description: 'Générateur inverter silencieux 7 kVA, triphasé, connexion Bluetooth, jamais utilisé. Garantie constructeur 3 ans.', vendeur: { nom: 'ElecPro SARL', tel: '+33 4 93 12 34 56', email: 'elecpro@email.fr', pro: true }, statut: 'approved', date: '2024-01-28', vues: 67, image: null },
+  { id: 10, titre: 'Compresseur ATLAS COPCO GA75', categorie: 'Matériel industriel', marque: 'ATLAS COPCO', modele: 'GA75+', annee: 2015, etat: 'Occasion', prix: 11000, localisation: 'Grenoble (38)', description: 'Compresseur à vis 75kW, 13 bar, sécheur intégré. Révisé complet 2023, 42 000 heures.', vendeur: { nom: 'Air Comprimé Alpes', tel: '+33 4 76 12 34 56', email: 'info@aca-pro.fr', pro: true }, statut: 'approved', date: '2024-01-29', vues: 174, image: null },
+  { id: 11, titre: 'Plieuse AMADA HFP-80', categorie: 'Machines-outils', marque: 'AMADA', modele: 'HFP-80', annee: 2014, etat: 'Occasion', prix: 24000, localisation: 'Rennes (35)', description: 'Presse plieuse hydraulique 80T, 2500mm, commande CNC Delem DA-41. Outils inclus.', vendeur: { nom: 'Métal Formation Ouest', tel: '+33 2 99 23 45 67', email: 'mfo@artisan.fr', pro: false }, statut: 'approved', date: '2024-01-30', vues: 121, image: null },
+  { id: 12, titre: 'Nacelle élévatrice HAULOTTE H21TX', categorie: 'Matériel industriel', marque: 'HAULOTTE', modele: 'H21TX', annee: 2018, etat: 'Occasion', prix: 38000, localisation: 'Dijon (21)', description: 'Nacelle articulée 21m, diesel, 4x4, cabine. Contrôles techniques à jour. Parfait état.', vendeur: { nom: 'Location Bourgogne SAS', tel: '+33 3 80 12 34 56', email: 'lb@pro-location.fr', pro: true }, statut: 'approved', date: '2024-02-01', vues: 93, image: null },
+  { id: 100, titre: 'Poinçonneuse TRUMPF TruPunch 2000', categorie: 'Machines-outils', marque: 'TRUMPF', modele: 'TruPunch 2000', annee: 2019, etat: 'Occasion', prix: 55000, localisation: 'Lyon (69)', description: 'En attente de validation admin.', vendeur: { nom: 'Test Vendeur', tel: '+33 6 00 00 00 00', email: 'test@test.fr', pro: false }, statut: 'pending', date: '2024-02-05', vues: 0, image: null },
+  { id: 101, titre: 'Groupe froid TRANE RTAA 140', categorie: 'Groupes froid', marque: 'TRANE', modele: 'RTAA 140', annee: 2017, etat: 'Occasion', prix: 27000, localisation: 'Paris (75)', description: 'Annonce refusée pour test.', vendeur: { nom: 'Test Vendeur 2', tel: '+33 6 11 11 11 11', email: 'test2@test.fr', pro: false }, statut: 'refused', date: '2024-02-06', vues: 0, image: null },
+];
+
+const SAMPLE_USERS = [
+  { id: 1, nom: 'Admin Principal', email: 'admin@vendremamachine.fr', mdp: 'admin123', role: 'admin', dateInscription: '2024-01-01', annonces: 0 },
+  { id: 2, nom: 'Jean-Marc Durand', email: 'jm.durand@gmail.com', mdp: 'user123', role: 'user', dateInscription: '2024-01-10', annonces: 1 },
+  { id: 3, nom: 'STE Énergie Plus', email: 'contact@energie-plus.fr', mdp: 'user123', role: 'user', dateInscription: '2024-01-12', annonces: 1 },
+];
+
+/* ─── STORAGE HELPERS ─── */
+const DB = {
+  init() {
+    if (!localStorage.getItem('vmm_annonces')) {
+      localStorage.setItem('vmm_annonces', JSON.stringify(SAMPLE_ANNONCES));
+    }
+    if (!localStorage.getItem('vmm_users')) {
+      localStorage.setItem('vmm_users', JSON.stringify(SAMPLE_USERS));
+    }
+  },
+  getAnnonces() { return JSON.parse(localStorage.getItem('vmm_annonces') || '[]'); },
+  saveAnnonces(data) { localStorage.setItem('vmm_annonces', JSON.stringify(data)); },
+  getUsers() { return JSON.parse(localStorage.getItem('vmm_users') || '[]'); },
+  saveUsers(data) { localStorage.setItem('vmm_users', JSON.stringify(data)); },
+  getSession() { return JSON.parse(sessionStorage.getItem('vmm_session') || 'null'); },
+  setSession(user) { sessionStorage.setItem('vmm_session', JSON.stringify(user)); },
+  clearSession() { sessionStorage.removeItem('vmm_session'); },
+
+  getApprovedAnnonces() {
+    return this.getAnnonces().filter(a => a.statut === 'approved');
+  },
+  getAnnonce(id) {
+    return this.getAnnonces().find(a => a.id === parseInt(id));
+  },
+  addAnnonce(data) {
+    const annonces = this.getAnnonces();
+    const newId = Math.max(...annonces.map(a => a.id), 0) + 1;
+    const annonce = { ...data, id: newId, statut: 'pending', date: new Date().toISOString().split('T')[0], vues: 0 };
+    annonces.push(annonce);
+    this.saveAnnonces(annonces);
+    return annonce;
+  },
+  updateAnnonce(id, data) {
+    const annonces = this.getAnnonces();
+    const idx = annonces.findIndex(a => a.id === parseInt(id));
+    if (idx >= 0) { annonces[idx] = { ...annonces[idx], ...data }; this.saveAnnonces(annonces); }
+  },
+  deleteAnnonce(id) {
+    const annonces = this.getAnnonces().filter(a => a.id !== parseInt(id));
+    this.saveAnnonces(annonces);
+  },
+  login(email, mdp) {
+    const users = this.getUsers();
+    return users.find(u => u.email === email && u.mdp === mdp) || null;
+  },
+  register(nom, email, mdp) {
+    const users = this.getUsers();
+    if (users.find(u => u.email === email)) return null;
+    const newId = Math.max(...users.map(u => u.id), 0) + 1;
+    const user = { id: newId, nom, email, mdp, role: 'user', dateInscription: new Date().toISOString().split('T')[0], annonces: 0 };
+    users.push(user);
+    this.saveUsers(users);
+    return user;
+  }
+};
+
+/* ─── TOAST NOTIFICATIONS ─── */
+function showToast(type, title, msg) {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const colors = { success: '#0F9B6A', error: '#D43030', warning: '#E8A500', info: '#2E6FD8' };
+  const toast = document.createElement('div');
+  toast.className = `toast toast--${type}`;
+  toast.innerHTML = `
+    <svg class="toast__icon" viewBox="0 0 24 24" style="fill:${colors[type]||colors.info}">
+      ${type==='success'?ICONS.check:type==='error'?ICONS.close:ICONS.info}
+    </svg>
+    <div class="toast__body">
+      <div class="toast__title">${title}</div>
+      ${msg ? `<div class="toast__msg">${msg}</div>` : ''}
+    </div>
+    <button class="toast__close" onclick="this.closest('.toast').remove()">✕</button>`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 4500);
+}
+
+/* ─── NAVBAR HELPERS ─── */
+function updateNavbar() {
+  const session = DB.getSession();
+  const navUser = document.getElementById('nav-user');
+  const navAdmin = document.getElementById('nav-admin');
+  const navLogin = document.getElementById('nav-login');
+  if (!navUser) return;
+  if (session) {
+    navUser.textContent = session.nom.split(' ')[0];
+    navUser.href = 'compte.html';
+    navUser.style.display = 'inline-flex';
+    if (navAdmin) navAdmin.style.display = session.role === 'admin' ? 'inline-flex' : 'none';
+    if (navLogin) navLogin.textContent = 'Déconnexion';
+    if (navLogin) navLogin.onclick = (e) => { e.preventDefault(); DB.clearSession(); location.reload(); };
+  } else {
+    navUser.style.display = 'none';
+    if (navAdmin) navAdmin.style.display = 'none';
+    if (navLogin) navLogin.href = 'connexion.html';
+    if (navLogin) navLogin.textContent = 'Connexion';
+  }
+}
+
+/* ─── MOBILE MENU ─── */
+function initMobileMenu() {
+  const btn = document.getElementById('hamburger');
+  const menu = document.getElementById('mobile-menu');
+  if (btn && menu) {
+    btn.addEventListener('click', () => { menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; });
+  }
+}
+
+/* ─── LISTING CARD BUILDER ─── */
+function buildListingCard(a) {
+  const catColor = { 'Machines-outils': '#0D2B6E', 'Groupes électrogènes': '#1A4FAA', 'Transformateurs': '#2E6FD8', 'Groupes froid': '#0F9B6A', 'Matériel industriel': '#D45A00', 'Véhicules utilitaires': '#5A6380' };
+  return `
+  <a href="annonce-detail.html?id=${a.id}" class="listing-card">
+    <div class="listing-card__img">
+      <div class="listing-card__img-placeholder">${ICONS.image}</div>
+      <div class="listing-card__badges">
+        <span class="badge badge--${a.etat==='Neuf'?'new':'used'}">${a.etat}</span>
+      </div>
+    </div>
+    <div class="listing-card__body">
+      <div class="listing-card__cat">${a.categorie}</div>
+      <h3 class="listing-card__title">${a.titre}</h3>
+      <div class="listing-card__meta">
+        <span class="listing-card__meta-item">${ICONS.location} ${a.localisation}</span>
+        <span class="listing-card__meta-item">${ICONS.calendar} ${a.annee}</span>
+      </div>
+      <div class="listing-card__footer">
+        <div class="listing-card__price">${Number(a.prix).toLocaleString('fr-FR')} € <span>HT</span></div>
+        <div class="listing-card__contact">${a.vues} vues</div>
+      </div>
+    </div>
+  </a>`;
+}
+
+/* ─── CATEGORIES ─── */
+const CATEGORIES = [
+  { nom: 'Machines-outils', icon: ICONS.gear, count: null },
+  { nom: 'Groupes électrogènes', icon: ICONS.bolt, count: null },
+  { nom: 'Transformateurs', icon: ICONS.transformer, count: null },
+  { nom: 'Groupes froid', icon: ICONS.snowflake, count: null },
+  { nom: 'Matériel industriel', icon: ICONS.factory, count: null },
+  { nom: 'Véhicules utilitaires', icon: ICONS.truck, count: null },
+];
+
+function buildCategoryCard(cat, count) {
+  return `
+  <a href="annonces.html?categorie=${encodeURIComponent(cat.nom)}" class="category-card">
+    <div class="category-card__icon">${cat.icon}</div>
+    <h4>${cat.nom}</h4>
+    <p>${count} annonce${count>1?'s':''}</p>
+  </a>`;
+}
+
+/* ─── PRICE FORMATTER ─── */
+function formatPrice(p) {
+  return Number(p).toLocaleString('fr-FR') + ' €';
+}
+
+/* ─── DATE FORMATTER ─── */
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+/* ─── SEARCH ─── */
+function searchAnnonces(query, filters = {}) {
+  let annonces = DB.getApprovedAnnonces();
+  if (query) {
+    const q = query.toLowerCase();
+    annonces = annonces.filter(a =>
+      a.titre.toLowerCase().includes(q) ||
+      a.marque.toLowerCase().includes(q) ||
+      a.modele.toLowerCase().includes(q) ||
+      a.description.toLowerCase().includes(q) ||
+      a.categorie.toLowerCase().includes(q)
+    );
+  }
+  if (filters.categorie) annonces = annonces.filter(a => a.categorie === filters.categorie);
+  if (filters.etat) annonces = annonces.filter(a => a.etat === filters.etat);
+  if (filters.prixMin) annonces = annonces.filter(a => a.prix >= parseFloat(filters.prixMin));
+  if (filters.prixMax) annonces = annonces.filter(a => a.prix <= parseFloat(filters.prixMax));
+  if (filters.anneeMin) annonces = annonces.filter(a => a.annee >= parseInt(filters.anneeMin));
+  if (filters.anneeMax) annonces = annonces.filter(a => a.annee <= parseInt(filters.anneeMax));
+  if (filters.localisation) annonces = annonces.filter(a => a.localisation.toLowerCase().includes(filters.localisation.toLowerCase()));
+  if (filters.sort === 'prix_asc') annonces.sort((a,b) => a.prix - b.prix);
+  else if (filters.sort === 'prix_desc') annonces.sort((a,b) => b.prix - a.prix);
+  else if (filters.sort === 'date_desc') annonces.sort((a,b) => b.date.localeCompare(a.date));
+  else if (filters.sort === 'date_asc') annonces.sort((a,b) => a.date.localeCompare(b.date));
+  else annonces.sort((a,b) => b.date.localeCompare(a.date));
+  return annonces;
+}
+
+/* ─── URL PARAMS ─── */
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+/* ─── REQUIRE AUTH ─── */
+function requireAuth(role) {
+  const session = DB.getSession();
+  if (!session) { window.location.href = 'connexion.html'; return null; }
+  if (role === 'admin' && session.role !== 'admin') { window.location.href = 'index.html'; return null; }
+  return session;
+}
+
+/* ─── NAVBAR HTML (shared) ─── */
+const NAVBAR_HTML = `
+<nav class="navbar">
+  <div class="container navbar__inner">
+    <a href="index.html" class="navbar__logo">
+      <div class="navbar__logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+      </div>
+      <span class="navbar__logo-text">VendreMa<span>Machine</span></span>
+    </a>
+    <div class="navbar__search">
+      <input type="text" placeholder="Rechercher une machine..." id="nav-search-input">
+      <button onclick="goSearch()">${ICONS.search}</button>
+    </div>
+    <nav class="navbar__nav">
+      <a href="annonces.html">Annonces</a>
+      <a href="a-propos.html">À propos</a>
+      <a href="contact.html">Contact</a>
+      <a href="compte.html" id="nav-user" style="display:none">${ICONS.user} Mon compte</a>
+      <a href="#" id="nav-admin" style="display:none">Admin</a>
+      <a href="connexion.html" id="nav-login">Connexion</a>
+      <a href="publier.html" class="btn btn--primary btn--sm navbar__cta">${ICONS.add} Publier</a>
+    </nav>
+    <button class="navbar__hamburger" id="hamburger">${ICONS.menu}</button>
+  </div>
+  <div class="navbar__mobile-menu" id="mobile-menu">
+    <a href="annonces.html">Annonces</a>
+    <a href="publier.html">Publier une annonce</a>
+    <a href="compte.html">Mon compte</a>
+    <a href="a-propos.html">À propos</a>
+    <a href="contact.html">Contact</a>
+    <a href="connexion.html" id="nav-login-m">Connexion</a>
+  </div>
+</nav>`;
+
+const FOOTER_HTML = `
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="index.html" class="navbar__logo">
+          <div class="navbar__logo-mark" style="background:var(--accent)">
+            <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#fff"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+          </div>
+          <span class="navbar__logo-text">VendreMa<span>Machine</span></span>
+        </a>
+        <p>La marketplace de référence pour l'achat et la vente de matériel industriel en France. Des milliers d'annonces vérifiées par nos experts.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="annonces.html">Toutes les annonces</a></li>
+          <li><a href="annonces.html?categorie=Machines-outils">Machines-outils</a></li>
+          <li><a href="annonces.html?categorie=Groupes+%C3%A9lectrog%C3%A8nes">Groupes électrogènes</a></li>
+          <li><a href="annonces.html?categorie=Transformateurs">Transformateurs</a></li>
+          <li><a href="publier.html">Publier une annonce</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Informations</h4>
+        <ul>
+          <li><a href="a-propos.html">À propos</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="conditions-utilisation.html">Conditions d'utilisation</a></li>
+          <li><a href="connexion.html">Connexion / Inscription</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <div class="footer__contact-item">${ICONS.mail} <span>vendremamachinefr@gmail.fr</span></div>
+        <div class="footer__contact-item">${ICONS.phone} <span>+33 1 23 45 67 89</span></div>
+        <div class="footer__contact-item">${ICONS.location} <span>France entière</span></div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© ${new Date().getFullYear()} VendreMaMachine.fr — Tous droits réservés</p>
+      <div class="footer__bottom-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="conditions-utilisation.html">CGU</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>`;
+
+/* ─── INJECT NAVBAR/FOOTER ─── */
+function injectLayout() {
+  const navEl = document.getElementById('navbar-placeholder');
+  const footerEl = document.getElementById('footer-placeholder');
+  if (navEl) navEl.innerHTML = NAVBAR_HTML;
+  if (footerEl) footerEl.innerHTML = FOOTER_HTML;
+  updateNavbar();
+  initMobileMenu();
+  const searchInput = document.getElementById('nav-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') goSearch(); });
+  }
+}
+
+function goSearch() {
+  const q = document.getElementById('nav-search-input')?.value || '';
+  window.location.href = `annonces.html?q=${encodeURIComponent(q)}`;
+}
+
+/* ─── INIT ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  DB.init();
+  injectLayout();
+});
